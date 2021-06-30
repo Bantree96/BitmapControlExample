@@ -76,17 +76,18 @@ namespace BitmapControlExample
         }
 
         // 임의의 Array로 이미지 만들기
-        internal void ArrayToImage()
+        internal void ArrayToImage(int width, int height)
         {
-
+            // 배열의 사이즈를 width가아닌 stride로 잡아 패딩한만큼 
+            int stride = width + (width % 4 != 0 ? 4 - width % 4 : 0);
             // array 갯수 지정 필수
-            _imageArray = new byte[500*501];
-            for (int i=0; i< 500 * 501; i++)
+            _imageArray = new byte[stride*height];
+            for (int i=0; i< stride * height; i++)
             {
                 _imageArray[i] = 100;
             }
 
-            Bitmap _arrayBitmap = ByteToBitmap(_imageArray);
+            Bitmap _arrayBitmap = ByteToBitmap(_imageArray, width, 500);
             ImageSource = GetBitmapImage2(_arrayBitmap);
 
         }
@@ -102,7 +103,7 @@ namespace BitmapControlExample
         #region create
         public MainViewModel()
         {
-            ImageSource = GetBitmapImage(new Uri(@"C:\Users\jiwon\Desktop\abc\TestBitmap.bmp", UriKind.Absolute));
+            ImageSource = GetBitmapImage(new Uri(@"C:\Users\user\Desktop\C#자료\C#\비트맵다루기\TestBitmap.bmp", UriKind.Absolute));
             //Bitmap bitmap = (Bitmap)Bitmap.FromFile(@"C:\Users\jiwon\Desktop\새 폴더 (3)\MARBLES.BMP", true);
             //ImageSource = BitmapConversion.BitmapToBitmapSource(bitmap);
         }
@@ -162,29 +163,22 @@ namespace BitmapControlExample
 
         #region Byte[] -> Bitmap
         // 바이트를 비트맵으로 변환
-        public Bitmap ByteToBitmap(byte[] data)
+        public Bitmap ByteToBitmap(byte[] data, int width, int height)
         {
-            // byte[]->IntPtr->Bitmap->BitmapImage
+            // byte[]->IntPtr->(stride)->Bitmap->BitmapImage
             // Marshal 
             // Stride // -> 4의 배수  Width 1 -> 4  5 -> 8 
 
-            // 여기에서 높이, 너비 및 형식을 알고있는 비트 맵을 만듭니다. 
-            Bitmap bmp = new Bitmap(501, 500, PixelFormat.Format8bppIndexed);
-
-            // BitmapData 생성 및 기록 될 모든 픽셀 잠금 
-            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
+            int stride = width + (width % 4 != 0 ? 4 - width % 4 : 0);
 
             // 포인트 사용한다고 정의 하며 마샬 메모리 등록
             IntPtr unmanagedPointer = Marshal.AllocHGlobal(data.Length);
-
-            // 바이트 배열의 데이터를 BitmapData로 복사합니다.
-            // 원래는 unsafe를 사용하기도 하나보다
-            Marshal.Copy(data, 0, bmpData.Scan0, data.Length);
+            // Bitmap(width, height, strid, format, scan)
+            Marshal.Copy(data, 0, unmanagedPointer, data.Length);
+            // stride를 사용한 비트맵 생성
+            Bitmap bmp = new Bitmap(width, height, stride, PixelFormat.Format8bppIndexed, unmanagedPointer);
             // 마샬 메모리 해제
             Marshal.FreeHGlobal(unmanagedPointer);
-            // 픽셀 잠금 해제 
-            bmp.UnlockBits(bmpData);
-
             return bmp;
         }
 

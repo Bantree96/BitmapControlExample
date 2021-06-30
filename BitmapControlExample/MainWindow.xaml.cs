@@ -53,7 +53,7 @@ namespace BitmapControlExample
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            _mainViewModel.ArrayToImage();
+            _mainViewModel.ArrayToImage(500, 500);
         }
     }
 }
