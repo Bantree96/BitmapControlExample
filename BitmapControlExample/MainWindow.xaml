@@ -1,0 +1,54 @@
+﻿<Window x:Class="BitmapControlExample.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="1000">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <StackPanel Margin="5">
+                <Button Content="Btn1 (Select .bmp)" Height="40" Margin="5" Click="Button_Click" />
+                <Button Content="Btn2 (Byte Array)" Height="40" Margin="5" Click="Button_Click_2" />
+                <Button Content="Btn3 (IntPtr)" Height="40" Margin="5" />
+                <Button Content="Btn4 (Set Gray Scale)" Height="40" Margin="5" Click="Button_Click_1" />
+            </StackPanel>
+        </Grid>
+        
+        <!-- Border 방법 3. -->
+        <Border Grid.Column="1" Background="Black"/>
+        
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <!-- Grid처럼 BorderBrush / Thickness 속성이 없는 항목은 Border를 따로 사용해주어야 하지만,
+                Label과같이 해당 속성이 있는 경우는 이와같이 사용도 가능합니다. -->
+            <Label Grid.Row="0" Content="[ 이미지 ]"
+                   BorderBrush="Black" BorderThickness="0 0 0 1">
+                <!-- 밑에 Setter부분들을 BorderBursh, BorderThickness처럼 그냥 바로 사용도 가능하지만.
+                     아래와 같이 사용도 가능합니다. 이와같은 방법을 사용하는 경우는 추후에 알려드리겠습니다.
+                     우선은 아래 방식도 있고, 아래 방식으로 Style을 변경하하실 수 있으시면 될것같습니다.-->
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="FontSize" Value="15"/>
+                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="VerticalAlignment" Value="Stretch"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    </Style>
+                </Label.Style>
+            </Label>
+
+            <Border Grid.Row="1">
+                <Image Source="{Binding ImageSource}"/>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
