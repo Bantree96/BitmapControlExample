@@ -72,7 +72,9 @@ namespace BitmapControlExample
                     _bitmap.SetPixel(x, y, col);
                 }
             }
+            
             ImageSource = GetBitmapImage2(_bitmap);
+            _bitmap.Dispose(); // 비트맵은 메모리 해제가 필수!!
         }
 
         // 임의의 Array로 이미지 만들기
@@ -173,9 +175,11 @@ namespace BitmapControlExample
 
             // 포인트 사용한다고 정의 하며 마샬 메모리 등록
             IntPtr unmanagedPointer = Marshal.AllocHGlobal(data.Length);
-            // Bitmap(width, height, strid, format, scan)
+            
+            // 마샬을가지고 바이트배열을 포인터에 복붙
             Marshal.Copy(data, 0, unmanagedPointer, data.Length);
             // stride를 사용한 비트맵 생성
+            // Bitmap(width, height, strid, format, scan)
             Bitmap bmp = new Bitmap(width, height, stride, PixelFormat.Format8bppIndexed, unmanagedPointer);
             // 마샬 메모리 해제
             Marshal.FreeHGlobal(unmanagedPointer);
